@@ -5,12 +5,12 @@ import { Image } from '../../../../imports/imports'
 export function Contact() {
     
 return (
-    <section id="contact" className='w-full flex items-center justify-center py-20 flex-col'>
+    <section id="contact" className='flex items-center justify-center py-20 flex-col'>
     <h1 className='font-racing text-5xl text-center mb-10   '>Fale Conosco</h1>
 
-    <section className='flex flex-row max-w-7xl w-full shadow-lg rounded-[32px] bg-yellow-400'>
-        <div className=''>
-            <Image alt='Homem levantando uma barra W ' src={'/contact-img.png'} width={600} height={400}/>
+    <section className='flex lg:flex-row flex-col max-w-7xl w-11/12 shadow-lg rounded-[32px] bg-yellow-400 mx-8'>
+        <div className='flex justify-center'>
+            <Image alt='Homem levantando uma barra W ' src={'/contact-img.png'} width={600} height={400} className='rounded-[32px] m-10 lg:m-0'/>
         </div>
         <div className='flex-1 flex flex-col py-10 px-20 justify-center'>
             <Input placeholder='Nome'/>

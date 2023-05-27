@@ -11,6 +11,8 @@ import { BecauseUse } from "../app/institutional/components/BecauseUse";
 import { HeaderHome } from "../app/institutional/components/HeaderHome";
 import { Contact } from "../app/institutional/components/Contact";
 import { FooterHome } from "@/app/institutional/components/FooterHome";
+import { Input, TextInput } from '@/components/Input'
+import { Button } from '@/components/Button'
 
 export {
     Image,
@@ -26,5 +28,8 @@ export {
     BecauseUse,
     HeaderHome,
     Contact,
-    FooterHome
+    FooterHome,
+    Input,
+    TextInput,
+    Button
 }

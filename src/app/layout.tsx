@@ -1,5 +1,6 @@
 
 import './globals.css'
+import AuthProvider from "@/contexts/auth";
 
 export const metadata = {
   title: 'PumpIT - Eleve seu treino para o próximo nível!',
@@ -14,8 +15,10 @@ export default function RootLayout({
 }) {
   return (
     
-    <html lang="pt-BR" className='scroll-smooth'>
-      <body className='overflow-x-hidden flex items-center flex-col'>{children}</body>
-    </html>
+    <AuthProvider>
+      <html lang="pt-BR" className='scroll-smooth'>
+          <body className='overflow-x-hidden flex items-center flex-col'>{children}</body>
+      </html>
+    </AuthProvider>
   )
 }

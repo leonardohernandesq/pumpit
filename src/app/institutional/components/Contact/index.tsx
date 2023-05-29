@@ -5,7 +5,7 @@ import { Image } from '../../../../imports/imports'
 export function Contact() {
     
 return (
-    <section id="contact" className='flex items-center justify-center py-20 flex-col'>
+    <section id="contact" className='flex items-center justify-center py-20 flex-col w-full'>
     <h1 className='font-racing text-5xl text-center mb-10   '>Fale Conosco</h1>
 
     <section className='flex lg:flex-row flex-col max-w-7xl w-11/12 shadow-lg rounded-[32px] bg-yellow-400 mx-8'>

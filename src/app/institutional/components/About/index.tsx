@@ -1,4 +1,4 @@
-import { Image } from '../../../../imports/imports'
+import Image from "next/image"
 
 export function About() {
     return (

@@ -1,10 +1,12 @@
 'use client';
 
 import { auth, db } from "@/service/firebaseConnection";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
-import { useState, createContext, ReactNode } from "react";
+import { useState, createContext, ReactNode, useEffect } from "react";
+import { parseCookies, setCookie, destroyCookie } from 'nookies';
+
 
 interface IAuthContextData{
     user: IUserProps | undefined
@@ -12,6 +14,8 @@ interface IAuthContextData{
     loadingAuth: boolean;
     signUp: (credentials: IRegisterProps) => Promise<void>
     signIn: (credentials: ILoginProps) => Promise<void>
+    resetPassword: (credentials: string) => Promise<void>
+    signOut: () => Promise<void>
 }
 
 interface IRegisterProps {
@@ -43,6 +47,37 @@ export function AuthProvider({children}: TAuthProviderProps){
     const [user, setUser] = useState<IUserProps>();
     const isAuthenticated = !!user;
     const [loadingAuth, setLoadingAuth] = useState(false);
+    const [currentUrl, setCurrentUrl] = useState('');
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (usuario) => {
+            if (usuario) {
+                setCurrentUrl(window.location.href)
+                usuario.getIdToken().then(async (token) => {
+                const userProfile = await getDoc(doc(db, "users", usuario.uid))
+
+                let data = {
+                    uid: usuario.uid,
+                    email: usuario.email,
+                    name: userProfile.data()?.name,
+                }
+
+                setUser(data as IUserProps);
+                console.log("logado");
+
+                if(currentUrl.startsWith('http://localhost:3000/#') || currentUrl === 'http://localhost:3000/'){
+                    router.push('/');
+                } else {
+                    router.push('/dashboard');
+                }
+            });
+            } else {
+                setUser(undefined);
+            }
+        });
+    
+        return () => unsubscribe();
+    }, [router, currentUrl])
 
     async function signUp({email, password, name}: IRegisterProps) {
         setLoadingAuth(true);
@@ -58,7 +93,8 @@ export function AuthProvider({children}: TAuthProviderProps){
                     mm:null,
                     metapeso:null,
                     metamm:null,
-                    metabf:null
+                    metabf:null,
+                    presence:[],
                 })
                     .then(() => {
                         let data = {
@@ -68,12 +104,14 @@ export function AuthProvider({children}: TAuthProviderProps){
                     
                         setUser(data as IUserProps);
                         setLoadingAuth(false);
+                        signIn({email, password});
+
                         console.log("Conta Criada")
                 })
-                .catch((error) => {
-                    console.log(error)
-                    setLoadingAuth(false)
-                })
+                    .catch((error) => {
+                        console.log(error)
+                        setLoadingAuth(false)
+                    })
             })
             .catch(() => {
                 console.log("erro ao criar conta")
@@ -83,6 +121,7 @@ export function AuthProvider({children}: TAuthProviderProps){
 
     async function signIn({email, password}: ILoginProps ){
         setLoadingAuth(true);
+        const token = (await signInWithEmailAndPassword(auth, email, password)).user.getIdToken();
         await signInWithEmailAndPassword(auth, email, password)
             .then(async (value) => {
                 let uid = value.user.uid;
@@ -94,13 +133,38 @@ export function AuthProvider({children}: TAuthProviderProps){
                     email: value.user.email,
                     name: userProfile.data()?.name,
                 }
-
+                setCookie(null, '@pumpit.token', await token, {
+                    maxAge: 30 * 24 * 60 * 60,
+                    path: '/',
+                });
                 setUser(data as IUserProps)
                 setLoadingAuth(false);
                 
                 console.log("logado")
                 router.push('/dashboard')
+        })
+    }
+
+    async function resetPassword({email}: any){
+        if (user != null) {
+            await sendPasswordResetEmail(auth, email)
+            .then(async (value) => {
+                console.log("senha alterada com sucesso!")
             })
+            .catch((e) => {
+                console.log("erro ao redefinir a senha!")
+            })
+        }
+    }
+    async function signOut(){
+        try{
+            console.log('Deslogando...');
+            destroyCookie(undefined, '@pumpit.token');
+            setUser(undefined);
+            router.push('/signin');
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     return(
@@ -109,7 +173,9 @@ export function AuthProvider({children}: TAuthProviderProps){
             isAuthenticated,
             loadingAuth,
             signUp,
-            signIn
+            signIn,
+            resetPassword,
+            signOut
         }}> 
             {children}
         </AuthContext.Provider>

@@ -1,6 +1,6 @@
 import {Input, TextInput } from '@/components/Input'
 import {Button} from '@/components/Button'
-import { Image } from '../../../../imports/imports'
+import Image from "next/image"
 
 export function Contact() {
     

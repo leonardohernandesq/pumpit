@@ -6,6 +6,7 @@ import { initialValues, SignInSchema } from '@/formik/LoginSchema';
 import React, { useContext } from 'react'
 import { FaFacebookF, FaGoogle, FaApple } from 'react-icons/fa';
 import { AuthContext } from '../../contexts/auth';
+import Link  from 'next/link'
 
 interface ISignInValues{
   email:string;
@@ -89,6 +90,12 @@ const Login = () => {
                 <button>
                   <FaApple size={30} className='text-yellow-400'/>
                 </button>
+              </section>
+
+              <section>
+                <p className='text-center text-white mt-10'>
+                  <Link href="/redefine"> Redefinir senha </Link> 
+                </p>
               </section>
             </section>
           </main>

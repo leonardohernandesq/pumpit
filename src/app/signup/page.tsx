@@ -11,7 +11,7 @@ interface IRegisterProps{
   password: string,
   confirmPassword: string,
   name: string
-}
+} 
 
 export default function Register() {
   const { signUp, isAuthenticated, user } = useContext(AuthContext)

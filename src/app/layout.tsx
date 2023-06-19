@@ -17,7 +17,7 @@ export default function RootLayout({
     
     <AuthProvider>
       <html lang="pt-BR" className='scroll-smooth'>
-          <body className='overflow-x-hidden flex items-center flex-col'>{children}</body>
+          <body className='overflow-x-hidden flex items-center flex-col bg-gray-100'>{children}</body>
       </html>
     </AuthProvider>
   )

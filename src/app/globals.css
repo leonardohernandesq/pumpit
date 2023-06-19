@@ -8,4 +8,25 @@
     font-family: 'Racing Sans One';
 }
 
-html{scroll-behavior: smooth;}
+html{
+    scroll-behavior: smooth;
+}
+
+meter::-webkit-meter-optimum-value{
+    background: #0f0f0f;
+}
+
+meter::-webkit-meter-bar{
+    background: #FACC15;
+    border-radius: 0;
+    border: 0;
+}
+
+.react-calendar{
+    width: 100% !important;
+    height: 600px;
+}
+
+.react-calendar__tile{
+    height: 80px;
+}

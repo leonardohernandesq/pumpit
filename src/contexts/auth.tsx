@@ -52,7 +52,7 @@ export function AuthProvider({children}: TAuthProviderProps){
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (usuario) => {
             if (usuario) {
-                setCurrentUrl(window.location.href)
+                setCurrentUrl(window.location.pathname)
                 usuario.getIdToken().then(async (token) => {
                 const userProfile = await getDoc(doc(db, "users", usuario.uid))
 
@@ -64,12 +64,13 @@ export function AuthProvider({children}: TAuthProviderProps){
 
                 setUser(data as IUserProps);
                 console.log("logado");
+                console.log(currentUrl)
 
-                if(currentUrl.startsWith('http://localhost:3000/#') || currentUrl === 'http://localhost:3000/'){
-                    router.push('/');
-                } else {
-                    router.push('/dashboard');
-                }
+                // if(currentUrl === '/' ){
+                //     router.push('/');
+                // } else {
+                //     router.push('/dashboard');
+                // }
             });
             } else {
                 setUser(undefined);

@@ -59,8 +59,7 @@ export default function Redefine(){
                     type="submit"
                     bg='bg-yellow-400'
                     color='text-black'
-                    textButton='Redefinir Senha'
-                />
+                >Redefinir Senha</C.Button>
                 </Form>
 
                 <Link href="/">Voltar para a página inicial</Link>

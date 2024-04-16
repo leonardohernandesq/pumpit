@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../../contexts/auth'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-export default function ProtectedRoute({ children }:any){
+export function ProtectedRoute({ children }:any){
     
     const { signOut, isAuthenticated } = useContext(AuthContext);
     const auth = getAuth();

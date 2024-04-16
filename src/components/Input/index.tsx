@@ -20,7 +20,6 @@ export function Input({styles, error, ...rest}: IInputProps) {
       <p className='text-red-500'>
         {error}
       </p>
-        
     </section>
   )
 }

@@ -1,4 +1,4 @@
-import ProtectedRoute from '@/components/ProtectedRoute'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Link from 'next/link'
 import React from 'react'
 

@@ -82,6 +82,9 @@ export function AuthProvider({children}: TAuthProviderProps){
 
     async function signUp({email, password, name}: IRegisterProps) {
         setLoadingAuth(true);
+        console.log(email);
+        console.log(password);
+        console.log(name);
         await createUserWithEmailAndPassword(auth, email, password)
             .then(async (value) => {
                 let uid = value.user.uid;
@@ -106,8 +109,6 @@ export function AuthProvider({children}: TAuthProviderProps){
                         setUser(data as IUserProps);
                         setLoadingAuth(false);
                         signIn({email, password});
-
-                        console.log("Conta Criada")
                 })
                     .catch((error) => {
                         console.log(error)
@@ -141,7 +142,6 @@ export function AuthProvider({children}: TAuthProviderProps){
                 setUser(data as IUserProps)
                 setLoadingAuth(false);
                 
-                console.log("logado")
                 router.push('/dashboard')
         })
     }

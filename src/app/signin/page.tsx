@@ -76,8 +76,7 @@ const Login = () => {
                   type="submit"
                   bg='bg-yellow-400'
                   color='text-black'
-                  textButton='Acessar'
-                />
+                >Acessar</C.Button>
               </Form>
 
               <section className='flex gap-12 justify-center mt-8'>

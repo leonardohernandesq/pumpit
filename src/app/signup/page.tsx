@@ -18,9 +18,10 @@ export default function Register() {
 
   const submitForm = (values: IRegisterProps) => {
     const {name, email, password } = values
-    if(signUp){
-      signUp({email, password, name})
-    }
+    // if(signUp){
+    // }
+    console.log(name)
+    signUp({email, password, name})
   }
 
   return (
@@ -110,8 +111,7 @@ export default function Register() {
                 <C.Button
                   type="submit"
                   bg='bg-yellow-400'
-                  color='text-black'
-                  textButton='Cadastrar'/>
+                  color='text-black'>Cadastrar</C.Button>
               </Form>
             </section>
           </main>

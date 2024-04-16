@@ -18,7 +18,7 @@ return (
             <Input placeholder='Telefone'/>
             <TextInput rows={6} placeholder='Digite sua mensagem...' />
 
-            <Button textButton='Enviar' bg='bg-black' color='text-yellow-400' />
+            <Button bg='bg-black' color='text-yellow-400'>Enviar</Button>
         </div>
     </section>
 </section>

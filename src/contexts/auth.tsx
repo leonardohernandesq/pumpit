@@ -6,10 +6,13 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
 import { useState, createContext, ReactNode, useEffect } from "react";
 import { parseCookies, setCookie, destroyCookie } from 'nookies';
+import { IRegisterProps } from "@/interface/IRegisterProps";
+import { ILoginProps } from "@/interface/ILoginProps";
+import { IUserProps } from "@/interface/IUserProps";
 
 
 interface IAuthContextData{
-    user: IUserProps | undefined
+    user?: IUserProps
     isAuthenticated: boolean;
     loadingAuth: boolean;
     signUp: (credentials: IRegisterProps) => Promise<void>
@@ -18,27 +21,10 @@ interface IAuthContextData{
     signOut: () => Promise<void>
 }
 
-interface IRegisterProps {
-    email: string,
-    password: string,
-    name:string,
-}
-
-interface ILoginProps {
-    email: string,
-    password: string,
-}
-
-
 type TAuthProviderProps = {
     children: ReactNode
 }
 
-interface IUserProps{
-    uid:string,
-    email: string,
-    name:string | null,
-}
 
 export const AuthContext = createContext({} as IAuthContextData);
 
@@ -63,14 +49,6 @@ export function AuthProvider({children}: TAuthProviderProps){
                 }
 
                 setUser(data as IUserProps);
-                console.log("logado");
-                console.log(currentUrl)
-
-                // if(currentUrl === '/' ){
-                //     router.push('/');
-                // } else {
-                //     router.push('/dashboard');
-                // }
             });
             } else {
                 setUser(undefined);

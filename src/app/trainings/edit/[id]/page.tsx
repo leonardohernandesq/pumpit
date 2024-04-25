@@ -78,7 +78,6 @@ export default function Page({ params }: { params: { id: string } }) {
                     <SectionMain>
                     <TitlePages title={"Editar Treino"}/>
                     
-                    <Timer start={isTrainingStarted} finish={isTrainingPaused} />      
                     <section className='relative w-full h-60 bg-black rounded-xl bg-[url("/bg-training.svg")] bg-cover bg-center flex justify-center pl-8 flex-col mb-8'>
                         {
                             treino &&

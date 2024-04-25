@@ -13,6 +13,7 @@ export default function Trainings() {
     // const { user } = useContext(AuthContext);
     const router = useRouter();
     const [trainings, setTrainings] = useState<[]>([]);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     useEffect(() => {
     const fetchTrainings = async () => {
@@ -39,18 +40,26 @@ export default function Trainings() {
         <ProtectedRoute>
             <SectionMain>
                 <TitlePages title="Treinos"/>
-                <div className='flex justify-between gap-5'>
+                <div className='flex justify-between items-start gap-5'>
                     {trainings.map((item: any, index:any) => {
                         return(
-                            <div key={index} className='bg-gray-800 w-full flex items-center justify-center h-16 text-white'>
-                                <button onClick={() => router.push(`/trainings/edit/${item.id}`)}>
-                                    {item.title}
+                            <>
+                                <button className="w-full" onMouseEnter={() => setIsPopupOpen(index)} onMouseLeave={() => setIsPopupOpen(false)}>
+                                    <div key={index} className='bg-gray-800 w-full flex items-center justify-center h-16 text-white'>
+                                            {item.title}
+                                    </div>
+                                    <div className={`flex-col gap-1 transition-opacity duration-700 ease-in-out ${isPopupOpen === index ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                                        <button className={`bg-yellow-500 p-2 w-full my-1 ${isPopupOpen === index ? 'block' : 'hidden'}`} onClick={() => router.push(`/trainings/edit/${item.id}`)}>Editar</button>
+                                        <button className={`bg-yellow-500 p-2 w-full my-1 ${isPopupOpen === index ? 'block' : 'hidden'}`} onClick={() => router.push(`/trainings/started/${item.id}`)}>Iniciar Treino</button>
+                                    </div>
                                 </button>
-                            </div>
+                            </>
                         )
                     })}
                 </div>
-                <Button onClick={() => router.push('/trainings/new')} color={''} bg={''}>Adicionar Treino</Button>
+                <div className='absolute bottom-2 right-10 w-64'>
+                    <Button onClick={() => router.push('/trainings/new')} color={''} bg={'bg-yellow-500'}>Adicionar Treino</Button>
+                </div>
             </SectionMain>      
         </ProtectedRoute>
     )

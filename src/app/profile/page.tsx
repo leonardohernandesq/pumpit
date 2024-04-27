@@ -4,10 +4,11 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { SectionMain } from '@/components/SectionMain';
 import { TitlePages } from '@/components/TitlePages';
+import { AuthContext } from '@/contexts/auth';
 import { initialValues, ProfileSchema } from '@/formik/ProfileSchema';
 import { Formik, Form } from 'formik';
 import Image from 'next/image';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 
 interface IProfileValues{
     altura: string;
@@ -22,12 +23,17 @@ interface IProfileValues{
 }
 
 export default function Profile() {
+    const { user } = useContext(AuthContext)
+
     const submitForm = (values: IProfileValues) => {
         const { altura, bf, metabf, metamm, metapeso, mm, name, nascimento, peso } = values
 
         console.log(values);
     }
 
+    if (!user) {
+        return <div>Carregando...</div>;
+    }
 
     return (
         <Formik
@@ -78,7 +84,7 @@ export default function Profile() {
                                         id='name'
                                         name='name'
                                         onChange={handleChange}
-                                        value={values.name}
+                                        value={values.name || (user ? user.name : '')}
                                         error={errorName && errors.name}
                                     />
                                     <Input
@@ -87,7 +93,7 @@ export default function Profile() {
                                         id='nascimento'
                                         name='nascimento'
                                         onChange={handleChange}
-                                        value={values.nascimento}
+                                        value={values.nascimento || (user ? user.nascimento : '')}
                                         error={errorNascimento && errors.nascimento}
                                         />
                                     <Input 
@@ -96,7 +102,7 @@ export default function Profile() {
                                         id='altura'
                                         name='altura'
                                         onChange={handleChange}
-                                        value={values.altura}
+                                        value={values.altura || (user ? user.altura : '')}
                                         error={errorAltura && errors.altura}
                                     />
                                     <Input
@@ -105,7 +111,7 @@ export default function Profile() {
                                         id='peso'
                                         name='peso'
                                         onChange={handleChange}
-                                        value={values.peso}
+                                        value={values.peso || (user ? user.peso : '')}
                                         error={errorPeso && errors.peso}
                                     />
                                     <Input
@@ -114,7 +120,7 @@ export default function Profile() {
                                         id='bf'
                                         name='bf'
                                         onChange={handleChange}
-                                        value={values.bf}
+                                        value={values.bf || (user ? user.bf : '')}
                                         error={errorBf && errors.bf}
                                     />
                                     <Input
@@ -123,7 +129,7 @@ export default function Profile() {
                                         id='mm'
                                         name='mm'
                                         onChange={handleChange}
-                                        value={values.mm}
+                                        value={values.mm || (user ? user.mm : '')}
                                         error={errorMm && errors.mm}
                                     />
                                     <Input 
@@ -132,7 +138,7 @@ export default function Profile() {
                                         id='metapeso'
                                         name='metapeso'
                                         onChange={handleChange}
-                                        value={values.metapeso}
+                                        value={values.metapeso || (user ? user.metapeso : '')}
                                         error={errorMetaPeso && errors.metapeso}
                                     />
                                     <Input 
@@ -141,7 +147,7 @@ export default function Profile() {
                                         id='metamm'
                                         name='metamm'
                                         onChange={handleChange}
-                                        value={values.metamm}
+                                        value={values.metamm || (user ? user.metamm : '')}
                                         error={errorMetaMm && errors.metamm}
                                         />
                                     <Input 
@@ -150,7 +156,7 @@ export default function Profile() {
                                         id='metabf'
                                         name='metabf'
                                         onChange={handleChange}
-                                        value={values.metabf}
+                                        value={values.metabf || (user ? user.metabf : '')}
                                         error={errorMetaBf && errors.metabf}
                                         />
                                     

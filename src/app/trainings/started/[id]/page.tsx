@@ -1,19 +1,17 @@
 'use client'
 
 import { ProtectedRoute } from '../../../../components/ProtectedRoute';
-import React, { useEffect, useState } from 'react'
-import { doc, getDoc } from "firebase/firestore";
+import React, { useContext, useEffect, useState } from 'react'
+import { arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from '@/service/firebaseConnection';
 import { SectionMain } from '@/components/SectionMain';
-import { Button } from '@/components/Button';
-import { FiClock, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { FiClock } from 'react-icons/fi';
 import { FaHeart, FaPause, FaPlay, FaStop } from 'react-icons/fa';
-import Link from 'next/link';
 import { TitlePages } from '@/components/TitlePages';
 import { useRouter } from 'next/navigation';
 import { ITraining } from '@/interface/ITraining';
 import Timer from '@/components/Timer';
-import { Input } from '@/components/Input';
+import { AuthContext } from '@/contexts/auth';
 
 export default function Page({ params }: { params: { id: string } }) {
     const [treino, setTreino] = useState({} as ITraining);
@@ -24,8 +22,8 @@ export default function Page({ params }: { params: { id: string } }) {
     const [isRestPaused, setIsRestPaused] = useState(false);
     const [isRestStarted, setIsRestStarted] = useState(false);
 
-    const [trainingCounter, setTrainingCounter] = useState(0);
-    const [restCounter, setRestCounter] = useState(0);
+    const { user } = useContext(AuthContext)
+
 
     const router = useRouter();
 
@@ -48,6 +46,36 @@ export default function Page({ params }: { params: { id: string } }) {
         getTrainings();
     }, [params]);
 
+    async function stopAndPlayTraining() {
+        if (isTrainingStarted) {
+            const confirm = window.confirm("Você realmente deseja finalizar seu treino?");
+            if (confirm) {
+                setIsTrainingStarted(false);
+                if (user) {
+                    const docUsers = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docUsers);
+    
+                    if (docSnap.exists()) {
+                        const today = new Date();
+    
+                        const updatedPresence = arrayUnion(today);
+    
+                        await updateDoc(docUsers, { presence: updatedPresence });
+
+                        router.push('/dashboard');
+                    } else {
+                        console.log("Documento de usuário não encontrado");
+                        router.push('/dashboard');
+                    }
+                }
+            } else {
+                alert("Seu treino não foi finalizado!");
+            }
+        } else {
+            setIsTrainingStarted(!isTrainingStarted);
+        }
+    }
+
             return (
                 <ProtectedRoute>
                     <SectionMain>
@@ -69,7 +97,7 @@ export default function Page({ params }: { params: { id: string } }) {
                             }
 
                             <div>
-                                <button className='bg-yellow-400 p-10 rounded-lg flex flex-col justify-center items-center' onClick={() => setIsTrainingStarted(!isTrainingStarted)}>
+                                <button className='bg-yellow-400 p-10 rounded-lg flex flex-col justify-center items-center' onClick={() => stopAndPlayTraining()}>
                                     {isTrainingStarted ? <FaStop className='text-4xl'/> : <FaPlay className='text-4xl'/>}
                                     <p className='font-semibold mt-1'>{isTrainingStarted ? 'Finalizar' : 'Iniciar'}</p>
                                 </button>
@@ -93,10 +121,10 @@ export default function Page({ params }: { params: { id: string } }) {
                                                             <span
                                                                 className="absolute text-yellow-400 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"
-                                                                stroke="currentColor" stroke-width="1">
-                                                                <path fill-rule="evenodd"
+                                                                stroke="currentColor" strokeWidth="1">
+                                                                <path fillRule="evenodd"
                                                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                                    clip-rule="evenodd"></path>
+                                                                    clipRule="evenodd"></path>
                                                                 </svg>
                                                             </span>
                                                             </label>
@@ -112,26 +140,17 @@ export default function Page({ params }: { params: { id: string } }) {
                             </section>
                             <section className='border bg-white border-gray-200 shadow-xl rounded-lg py-6'>
                                 <h2 className='text-xl font-bold text-center mb-4'>Descanso</h2>
-                                <div className='py-5 flex flex-row bg-black'>
+                                <div className='p-5 flex flex-row bg-black'>
                                     <div className='w-full flex flex-row justify-center gap-2'>
-                                        <div className='w-20 flex justify-center items-center bg-yellow-400 p-2 font-bold text-6xl rounded-lg'>0</div>
-                                        <div className='w-20 flex justify-center items-center bg-yellow-400 p-2 font-bold text-6xl rounded-lg'>0</div>
-                                    </div>
-                                    <p className='text-white text-6xl'>:</p>
-                                    <div className='w-full flex flex-row justify-center gap-2'>
-                                        <div className='w-20 flex justify-center items-center bg-yellow-400 p-2 font-bold text-6xl rounded-lg'>0</div>
-                                        <div className='w-20 flex justify-center items-center bg-yellow-400 p-2 font-bold text-6xl rounded-lg'>0</div>
-                                    </div>
-                                    <p className='text-white text-6xl'>:</p>
-                                    <div className='w-full flex flex-row justify-center gap-2'>
-                                        <div className='w-20 flex justify-center items-center bg-yellow-400 p-2 font-bold text-6xl rounded-lg'>0</div>
-                                        <div className='w-20 flex justify-center items-center bg-yellow-400 p-2 font-bold text-6xl rounded-lg'>0</div>
+                                        <div className='w-full flex justify-center items-center bg-yellow-400 p-2 font-bold text-7xl rounded-md tracking-widest'>
+                                            <Timer start={isRestStarted} finish={isRestPaused} />      
+                                        </div>
                                     </div>
                                 </div>
                                 
                                 <div className='flex justify-center mt-4 gap-3'>
-                                    <button className='w-14 h-14 flex justify-center items-center bg-yellow-400 rounded-md'><FaPlay className='text-xl'/></button>
-                                    <button className='w-14 h-14 flex justify-center items-center bg-black text-yellow-400 rounded-md'><FaPause className='text-xl'/></button>
+                                    <button className='w-14 h-14 flex justify-center items-center bg-yellow-400 rounded-md' onClick={() => setIsRestStarted(!isRestStarted)}><FaPlay className='text-xl'/></button>
+                                    <button className='w-14 h-14 flex justify-center items-center bg-black text-yellow-400 rounded-md' onClick={() => setIsRestStarted(!isRestStarted)}><FaPause className='text-xl'/></button>
                                 </div>
 
                             </section>

@@ -18,15 +18,12 @@ export default function Trainings() {
     useEffect(() => {
     const fetchTrainings = async () => {
         try {
-            // Acessar a coleção "trainings" no banco de dados
             const querySnapshot = await getDocs(collection(db, 'trainings'));
-            // Mapear os documentos para um array de treinos
             const fetchedTrainings = [] as any;
             querySnapshot.forEach((doc) => {
                 fetchedTrainings.push({ id: doc.id, ...doc.data() });
             });
             
-            console.log(fetchedTrainings);
             setTrainings(fetchedTrainings);
         } catch (error) {
             console.error('Erro ao buscar treinos:', error);
@@ -43,17 +40,15 @@ export default function Trainings() {
                 <div className='flex justify-between items-start gap-5'>
                     {trainings.map((item: any, index:any) => {
                         return(
-                            <>
-                                <button className="w-full" onMouseEnter={() => setIsPopupOpen(index)} onMouseLeave={() => setIsPopupOpen(false)}>
-                                    <div key={index} className='bg-gray-800 w-full flex items-center justify-center h-16 text-white'>
-                                            {item.title}
-                                    </div>
-                                    <div className={`flex-col gap-1 transition-opacity duration-700 ease-in-out ${isPopupOpen === index ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                                        <button className={`bg-yellow-500 p-2 w-full my-1 ${isPopupOpen === index ? 'block' : 'hidden'}`} onClick={() => router.push(`/trainings/edit/${item.id}`)}>Editar</button>
-                                        <button className={`bg-yellow-500 p-2 w-full my-1 ${isPopupOpen === index ? 'block' : 'hidden'}`} onClick={() => router.push(`/trainings/started/${item.id}`)}>Iniciar Treino</button>
-                                    </div>
-                                </button>
-                            </>
+                            <div className="w-full" key={index} onMouseEnter={() => setIsPopupOpen(index)} onMouseLeave={() => setIsPopupOpen(false)}>
+                                <div  className='bg-gray-800 w-full flex items-center justify-center h-16 text-white'>
+                                        {item.title}
+                                </div>
+                                <div className={`flex-col gap-1 transition-opacity duration-700 ease-in-out ${isPopupOpen === index ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                                    <button className={`bg-yellow-500 p-2 w-full my-1 ${isPopupOpen === index ? 'block' : 'hidden'}`} onClick={() => router.push(`/trainings/edit/${item.id}`)}>Editar</button>
+                                    <button className={`bg-yellow-500 p-2 w-full my-1 ${isPopupOpen === index ? 'block' : 'hidden'}`} onClick={() => router.push(`/trainings/started/${item.id}`)}>Iniciar Treino</button>
+                                </div>
+                            </div>
                         )
                     })}
                 </div>

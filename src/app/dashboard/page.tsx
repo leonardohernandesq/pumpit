@@ -1,13 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { SectionMain } from '@/components/SectionMain'
 import { TitlePages } from '@/components/TitlePages'
 import { PieChart } from '@/components/PieChart'
 import { PresenceSchedule } from '@/components/PresenceSchedule'
 import {ProtectedRoute} from '@/components/ProtectedRoute'
+import { AuthContext } from '@/contexts/auth'
 
 export default function Dashboard() {
+    const { monthPresence, counterTraining } = useContext(AuthContext);
+
     return (
         <ProtectedRoute>
             <SectionMain>
@@ -23,11 +26,11 @@ export default function Dashboard() {
                         <p className='text-lg w-40'>DA META DE ÁGUA CONCLUÍDA</p>
                     </section>
                     <section className='flex flex-col w-3/12 h-40 justify-center rounded-lg bg-[url("/treinosdiarios.png")] bg-cover bg-center py-6 px-4'>
-                        <h1 className='text-3xl font-bold mb-1'>8</h1>
+                        <h1 className='text-3xl font-bold mb-1'>{monthPresence.toString()}</h1>
                         <p className='text-lg w-40'>DIAS TREINADOS NESTE MÊS</p>
                     </section>
                     <section className='flex flex-col w-3/12 h-40 justify-center rounded-lg bg-[url("/planoscadastrados.png")] bg-cover bg-center py-6 px-4 text-yellow-400'>
-                        <h1 className='text-3xl font-bold mb-1'>4</h1>
+                        <h1 className='text-3xl font-bold mb-1'>{counterTraining.toString()}</h1>
                         <p className='text-lg w-40'>PLANOS DE TREINO CADASTRADOS</p>
                     </section>
                 </section>

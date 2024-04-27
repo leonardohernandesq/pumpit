@@ -1,15 +1,14 @@
 'use client';
 
 import { auth, db } from "@/service/firebaseConnection";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, User } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { useRouter } from 'next/navigation';
 import { useState, createContext, ReactNode, useEffect } from "react";
-import { parseCookies, setCookie, destroyCookie } from 'nookies';
+import { setCookie, destroyCookie } from 'nookies';
 import { IRegisterProps } from "@/interface/IRegisterProps";
 import { ILoginProps } from "@/interface/ILoginProps";
 import { IUserProps } from "@/interface/IUserProps";
-
 
 interface IAuthContextData{
     user?: IUserProps
@@ -19,12 +18,14 @@ interface IAuthContextData{
     signIn: (credentials: ILoginProps) => Promise<void>
     resetPassword: (credentials: string) => Promise<void>
     signOut: () => Promise<void>
+    presence?: Array<Date>
+    monthPresence: Number
+    counterTraining: Number
 }
 
 type TAuthProviderProps = {
     children: ReactNode
 }
-
 
 export const AuthContext = createContext({} as IAuthContextData);
 
@@ -33,36 +34,79 @@ export function AuthProvider({children}: TAuthProviderProps){
     const [user, setUser] = useState<IUserProps>();
     const isAuthenticated = !!user;
     const [loadingAuth, setLoadingAuth] = useState(false);
-    const [currentUrl, setCurrentUrl] = useState('');
+    
+    const [presence, setPresence] = useState([]);
+    const [monthPresence, setMonthPresence] = useState(0);
+    const [counterTraining, setCounterTraining] = useState(0);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (usuario) => {
             if (usuario) {
-                setCurrentUrl(window.location.pathname)
                 usuario.getIdToken().then(async (token) => {
-                const userProfile = await getDoc(doc(db, "users", usuario.uid))
+                    const userProfile = await getDoc(doc(db, "users", usuario.uid))
 
-                let data = {
-                    uid: usuario.uid,
-                    email: usuario.email,
-                    name: userProfile.data()?.name,
-                }
+                    let data = {
+                        uid: usuario.uid,
+                        email: usuario.email,
+                        ...userProfile.data(),
+                    }
 
-                setUser(data as IUserProps);
-            });
+                    setUser(data as IUserProps);
+                });
             } else {
                 setUser(undefined);
             }
         });
     
         return () => unsubscribe();
-    }, [router, currentUrl])
+    }, [])
+
+    useEffect(() => {
+        async function getPresence(){
+            if(!user){
+                return
+            }
+    
+            const docUsers = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docUsers);
+            setPresence(docSnap.data()?.presence);
+    
+            try{
+                const dates = presence?.map(({ seconds, nanoseconds }: any) => {
+                    const milliseconds = seconds * 1000 + nanoseconds / 1000000;
+                    return new Date(milliseconds).getMonth() + 1;
+                });
+                const actualMonth = new Date().getMonth() + 1;
+    
+                if(dates){
+                    const counterThisMonth = dates.filter((day: any) => day === actualMonth).length;
+                    setMonthPresence(counterThisMonth);
+                }
+            } catch {
+                console.log('Erro')
+            }
+        }
+    
+        getPresence()
+    }, [user, presence])
+
+    useEffect(() => {
+        async function getTrainingsCounter(){
+            if(!user){
+                return
+            }
+            const req = await getDocs(collection(db, 'trainings'));
+            const fetchedTrainings = [] as any;
+            req.forEach((doc) => {
+                fetchedTrainings.push({ id: doc.id, ...doc.data() });
+            });
+            setCounterTraining(fetchedTrainings.length);
+        }
+        getTrainingsCounter();
+    }, [user])
 
     async function signUp({email, password, name}: IRegisterProps) {
         setLoadingAuth(true);
-        console.log(email);
-        console.log(password);
-        console.log(name);
         await createUserWithEmailAndPassword(auth, email, password)
             .then(async (value) => {
                 let uid = value.user.uid;
@@ -135,6 +179,7 @@ export function AuthProvider({children}: TAuthProviderProps){
             })
         }
     }
+
     async function signOut(){
         try{
             console.log('Deslogando...');
@@ -154,7 +199,10 @@ export function AuthProvider({children}: TAuthProviderProps){
             signUp,
             signIn,
             resetPassword,
-            signOut
+            signOut,
+            presence,
+            monthPresence,
+            counterTraining
         }}> 
             {children}
         </AuthContext.Provider>
